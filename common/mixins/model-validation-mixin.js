@@ -344,11 +344,11 @@ module.exports = function ModelValidations(Model) {
               if (rule) {
                 results = results.concat(rule.validationRules.map(r =>
                   (
-                  {
-                    model: m,
-                    rule: r,
-                    isService: rule.isService
-                  }
+                    {
+                      model: m,
+                      rule: r,
+                      isService: rule.isService
+                    }
                   )
                 ));
               }
