@@ -177,8 +177,7 @@ describe(chalk.blue('model-rule-test'), function () {
             var data = {
                 status: 'entered',
                 age: 50,
-                husband_name: 'Robin',
-                
+                husband_name: 'Robin'
             };
             // The default Rules enrich the data
             // debugger;
@@ -212,7 +211,7 @@ describe(chalk.blue('model-rule-test'), function () {
 
         it('data without mandatory property value defined in rule and loopback validations throw combined validation errors.', function (done) {
             var data = {
-                status: 'entered', //morethan8chars
+                status: 'entered', 
                 age: 60
             };
             // There is a validation rule saying husband_name is mandatory in validation.xlsx
