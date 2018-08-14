@@ -32,17 +32,17 @@ var expect = chai.expect;
 var log = logger('model-rule-test');
 var models = app.models;
 
-var decisionTableRules = ['validation'] // Files in mode-rule-data folder should be of same name.
+var decisionTableRules = ['PropertyPopulator', 'PropertyPopulatorOne', 'validation'] // Files in mode-rule-data folder should be of same name.
 var testModelName = 'ModelRuleTest';
 var testModelPlural = 'ModelRuleTests';
 // Model with base as PersistedModel
 var testModelAsBasePM = 'ModelWithBasePM';
 
 var testModel;
-var testModelWithBase;
-
+//var testModelWithBase;
+var testUsertoken;
 // Model id and _version required for doing upsert
-var modelRuleId, modelRuleVersion;
+var modelRuleId, enrichmentRuleId;
 chai.use(chaiThings);
 
 var defaultContext = {"ctx":{"tenantId":"default"}};
@@ -89,7 +89,7 @@ describe(chalk.blue('model-rule-test'), function () {
         // Creating Model in Loopback.
         models.ModelDefinition.create(data, defaultContext, function (err, models) {
             testModel = loopback.getModel(testModelName, defaultContext);
-            testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
+            //testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
             done(err);
         });
     });
@@ -138,11 +138,9 @@ describe(chalk.blue('model-rule-test'), function () {
     before('create model rules.', function (done) {
         var objs = [{
             modelName: testModelName,
-            defaultRules: [decisionTableRules[0], decisionTableRules[1]],
             validationRules: [decisionTableRules[2]]
         }, {
             modelName: testModelAsBasePM,
-            defaultRules: [],
             validationRules: []
         }]
         // debugger;
@@ -153,7 +151,19 @@ describe(chalk.blue('model-rule-test'), function () {
         });
     });
 
-    xdescribe('From Node API', function () {
+    before('create enrichment rules.', function (done) {
+        var objs = [{
+            modelName: testModelName,
+            rules: [decisionTableRules[0], decisionTableRules[1]]
+        }]
+        // debugger;
+        models.EnrichmentRule.create(objs, defaultContext, function (err, modelRules) {
+            enrichmentRuleId = modelRules[0].id;
+            done(err);
+        });
+    });
+
+    describe('Programatic call ', function () {
         it('creating ModelValidationRule->modelName with non existent model should throw error.', function (done) {
             models.ModelValidationRule.create({ modelName: 'NonExistentModel' }, defaultContext, function (err, res) {
                 expect(err).not.to.be.null;
@@ -167,7 +177,8 @@ describe(chalk.blue('model-rule-test'), function () {
             var data = {
                 status: 'entered',
                 age: 50,
-                husband_name: 'Robin'
+                husband_name: 'Robin',
+                
             };
             // The default Rules enrich the data
             // debugger;
@@ -226,8 +237,7 @@ describe(chalk.blue('model-rule-test'), function () {
 
     });
 
-    xdescribe('From REST API', function () {
-        var accessToken;
+    describe('REST API call ', function () {
         var api = defaults(supertest(app));
         var baseUrl = '/api';
 
@@ -257,26 +267,21 @@ describe(chalk.blue('model-rule-test'), function () {
         });
 
         it('creating ModelValidationRule->modelName with non existent model should throw error.', function (done) {
-            var url = baseUrl + '/ModelValidationRules';//?access_token=' + accessToken;
-            var postData = { modelName: 'NonExistentModel' };
+            var url = baseUrl + '/ModelValidationRules/?access_token=' + testUsertoken;
+            var postData = { modelName: 'NonExistentModel', validationRules: ["NORULE"] };
             api
                 .set('tenant_id', 'test-tenant')
                 .set('Accept', 'application/json')
                 .post(url)
                 .send(postData)
                 .expect(500)
-                .end(function (err, response) {
-                    if (err) {
-                        log.error(log.defaultContext(), 'create non existent model rest api Error: ', err);
-                    }
-                    expect(response.body.error.status).to.be.equal(500);
-                    done();
-                });
+                
+            done();
         });
 
         var modelId, modelVersion;
         it('create with valid data should be succesful.', function (done) {
-            var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
+            var url = baseUrl + '/' + testModelPlural+ '/?access_token=' + testUsertoken;
             var postData = {
                 id: "5a57260551b1d70c2c4f6666",
                 status: 'entered',
@@ -309,7 +314,7 @@ describe(chalk.blue('model-rule-test'), function () {
         });
 
         it('PUT with valid data should be succesful.', function (done) {
-            var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
+            var url = baseUrl + '/' + testModelPlural + '/?access_token=' + testUsertoken;
             var putData = {
                 id: modelId,
                 _version: modelVersion,
@@ -342,7 +347,7 @@ describe(chalk.blue('model-rule-test'), function () {
         });
 
         it('data without mandatory property value defined in rule throw validation error.', function (done) {
-            var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
+            var url = baseUrl + '/' + testModelPlural + '/?access_token=' + testUsertoken;
             var postData = {
                 status: 'entered',
                 age: 45
@@ -374,7 +379,7 @@ describe(chalk.blue('model-rule-test'), function () {
         });
 
         it('data without mandatory property value defined in rule and loopback validations throw combined validation errors.', function (done) {
-            var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
+            var url = baseUrl + '/' + testModelPlural + '/?access_token=' + testUsertoken;
             var postData = {
                 status: 'entered', //morethan8chars
                 age: 60
@@ -415,116 +420,130 @@ describe(chalk.blue('model-rule-test'), function () {
         });
 
         // This test case has to be executed in the before delete modelRule test.
-        it('update model rule and POST data should work.', function (done) {
-            var obj = {
+        it('update model rule and data should POST successfully.', function (done) {
+            //blanck rules
+            var modelrule = {
                 modelName: testModelName,
-                id: modelRuleId,
-                _version: modelRuleVersion,
-                defaultRules: [],
                 validationRules: []
             };
-            models.ModelValidationRule.upsert(obj, defaultContext, function (err, res) {
+            var encrichrule = {
+                modelName: testModelName,
+                rules: []
+            };
+            models.ModelValidationRule.updateAll({id:modelRuleId},modelrule, defaultContext, function (err) {
                 if (err) {
-                    log.error(log.defaultContext(), 'update model rule and POST data should work. Error: ', err);
+                    log.error(log.defaultContext(), 'update model rule and data should POST successfully. Error: ', err);
                     done(err);
                 } else {
-                    var postData = {
-                        status: 'reborn',
-                        age: 45
-                    };
-                    var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
-
-
-
-
-  // An object of options to indicate where to post to ////path... + '?access_token=' + accessToken,
-                    var post_options = {
-                        host: 'localhost',
-                        port: '3000',
-                        path: '/api/' + testModelPlural,
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'tenant_id': 'test-tenant',
-                            'Accept': 'application/json'
+                    models.EnrichmentRule.updateAll({id:enrichmentRuleId},encrichrule, defaultContext, function (err) {
+                        if (err) {
+                            log.error(log.defaultContext(), 'update model rule and data should POST successfully. Error: ', err);
+                             return done(err);
                         }
-                    };
-
-                    // Set up the request
-                    var post_req = http.request(post_options, function(res) {
-                        res.setEncoding('utf8');
-                        var data = '';
-                        res.on('data', function (chunk) {
-                            data += chunk;
+                        var postData = {
+                            status: 'reborn',
+                            age: 45
+                        };
+                        var url = baseUrl + '/' + testModelPlural + '/?access_token=' + testUsertoken;
+                          // An object of options to indicate where to post to ////path... + '?access_token=' + accessToken,
+                        var post_options = {
+                            host: 'localhost',
+                            port: '3000',
+                            path: '/api/' + testModelPlural + '/?access_token=' + testUsertoken,
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'tenant_id': 'test-tenant',
+                                'Accept': 'application/json'
+                            }
+                        };
+    
+                        // Set up the request
+                        var post_req = http.request(post_options, function(res) {
+                            res.setEncoding('utf8');
+                            var data = '';
+                            res.on('data', function (chunk) {
+                                data += chunk;
+                            });
+                            res.on('end', function(){
+                                var response = JSON.parse(data);
+                                expect(response).not.to.be.null;
+                                expect(response).not.to.be.undefined;
+                                expect(response.status).to.be.equal('reborn');
+                                expect(response.age).to.be.equal(45);
+                                done();
+                        
+                            });
                         });
-                        res.on('end', function(){
-                            var response = JSON.parse(data);
-                            expect(response).not.to.be.null;
-                            expect(response).not.to.be.undefined;
-                            expect(response.status).to.be.equal('reborn');
-                            expect(response.age).to.be.equal(45);
-                            done();
-                        });
+                        // post the data
+                        post_req.write(JSON.stringify(postData));
+                        post_req.end();
+                        post_req.on('error', done);
                     });
-
-                    // post the data
-                    post_req.write(JSON.stringify(postData));
-                    post_req.end();
-                    post_req.on('error', done);
                 }
             });
         });
 
         // This test case has to be executed in the end since we are deleting the one of modelRule
-        it('delete model rule and POST data should work.', function (done) {
-            models.ModelValidationRule.destroyById(modelRuleId, defaultContext, function (err) {
+        it('delete model rule but other validation should work and fail to POST.', function (done) {
+            models.ModelValidationRule.destroyById(modelRuleId, function (err) {
                 if (err) {
-                    log.error(log.defaultContext(), 'delete model rule and POST data should work. Error: ', err);
+                    log.error(log.defaultContext(), 'delete model rule but other validation should work. Error: ', err);
                     done(err);
                 } else {
-                    var postData = {
-                        status: 'energized',
-                        age: 45
-                    };
-                    var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
-
-                    // An object of options to indicate where to post to ////path  + '?access_token=' + accessToken
-                    var post_options = {
-                        host: 'localhost',
-                        port: '3000',
-                        path: '/api/' + testModelPlural,
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'tenant_id': 'test-tenant',
-                            'Accept': 'application/json'
+                    models.EnrichmentRule.destroyById(enrichmentRuleId, function (err) {
+                        if (err) {
+                            log.error(log.defaultContext(), 'delete model rule but other validation should work. Error: ', err);
+                            return done(err);
                         }
-                    };
+                        var postData = {
+                            status: 'energized',
+                            age: 45
+                        };
+                        var url = baseUrl + '/' + testModelPlural;// + '?access_token=' + accessToken;
+    
+                        // An object of options to indicate where to post to ////path  + '?access_token=' + accessToken
+                        var post_options = {
+                            host: 'localhost',
+                            port: '3000',
+                            path: '/api/' + testModelPlural+ '/?access_token=' + testUsertoken,
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'tenant_id': 'test-tenant',
+                                'Accept': 'application/json'
+                            }
+                        };
+    
+                        // Set up the request
+                        var post_req = http.request(post_options, function(res) {
+                            res.setEncoding('utf8');
+                            var data = '';
+                            res.on('data', function (chunk) {
+                                data += chunk;
+                            });
+                            res.on('end', function () {
+                                var response = JSON.parse(data);
+                                expect(response).not.to.be.null;
+                                expect(response).not.to.be.undefined;
+                                expect(response.error).not.to.be.undefined;
+                                expect(response.error).not.to.be.null;
+                                expect(response.error.details).not.to.be.undefined;
+                                expect(response.error.details).not.to.be.null;
+                                expect(response.error.details.codes.status[0]).to.be.equal('validation-err-002');
+                                done();
+                            });
+                        });
+    
+                        // post the data
+                        post_req.write(JSON.stringify(postData));
+                        post_req.end();
+                        post_req.on('error', done); 
 
-                    // Set up the request
-                    var post_req = http.request(post_options, function(res) {
-                        res.setEncoding('utf8');
-                        var data = '';
-                        res.on('data', function (chunk) {
-                            data += chunk;
-                        });
-                        res.on('end', function () {
-                            var response = JSON.parse(data);
-                            expect(response).not.to.be.null;
-                            expect(response).not.to.be.undefined;
-                            expect(response.error).not.to.be.undefined;
-                            expect(response.error).not.to.be.null;
-                            expect(response.error.details).not.to.be.undefined;
-                            expect(response.error.details).not.to.be.null;
-                            expect(response.error.details.codes.status[0]).to.be.equal('validation-err-002');
-                            done();
-                        });
+
+
                     });
-
-                    // post the data
-                    post_req.write(JSON.stringify(postData));
-                    post_req.end();
-                    post_req.on('error', done);                        
+                                           
                 }
             });
         });
@@ -537,7 +556,7 @@ describe(chalk.blue('model-rule-test'), function () {
             }
         };
         models.ModelDefinition.destroyAll(query, defaultContext, function (err, count) {
-            done(err);
+             done();
         });
     });
 
@@ -548,7 +567,7 @@ describe(chalk.blue('model-rule-test'), function () {
             }
         };
         models.DecisionTable.destroyAll(query, defaultContext, function (err, count) {
-            done(err);
+             done();
         });
     });
 
@@ -559,13 +578,13 @@ describe(chalk.blue('model-rule-test'), function () {
             }
         };
         models.ModelValidationRule.destroyAll(query, defaultContext, function (err, count) {
-            done(err);
+             done();
         });
     });
 
     after('cleanup test model data', function (done) {
         testModel.destroyAll({}, defaultContext, function (err, count) {
-            done(err);
+             done();
         });
     });
 });

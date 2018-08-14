@@ -222,44 +222,6 @@ describe(chalk.blue('model data populators with decision services'), function(){
 
     });
 
-
-    xit('should insert into model into model rules table to register for property population without errors', function(done){
-        var modelRuleData = {
-            modelName: testModelName,
-            defaultRules: ['AssignCategory'],            
-            isService: true
-        };
-
-        models.ModelValidationRule.create(modelRuleData, defaultContext, (err, res) =>{
-            if(err) {
-                done(err)
-            }
-            else {
-                done();
-            }
-        });
-
-    });
-
-    xit('should assign category to the appropriate model instance', function(done){
-        var instanceData = {
-            name: 'Amit',
-            age: 32,
-            gender: 'M'
-        };
-        // debugger;
-        testModel.create(instanceData, defaultContext, function(err, result) {
-            if (err) {
-                done(err)
-            }
-            else {
-                expect('category' in result).to.be.true;
-                expect(result.category).to.equal('adult');
-                done();
-            }
-        });
-    });
-
     after('second after block', function(done) {
         // console.log("After of second Describe block");
         done();

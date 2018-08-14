@@ -49,12 +49,17 @@ function modelRuleAfterSave(ctx, next) {
   var data = ctx.data || ctx.instance;
   // Publishing message to other nodes in cluster to attach the 'before save' hook for model.
   // messaging.publish('modelRuleAttachHook', data.modelName, ctx.options);
+
   log.debug(log.defaultContext(), 'modelRuleAfterSave data is present. calling attachBeforeSaveHookToModel');
   var model = loopback.findModel(data.modelName, ctx.options);
-  // Setting the flag that Model Rule exists which will be used for validation rules
-  if (model) {
+  if(model && data && data.validationRules && data.validationRules.length > 0){
+    // Setting the flag that Model Rule exists which will be used for validation rules
     model.settings._isModelRuleExists = true;
+  }else{
+    //validationRules is empty (updated or deleted)
+    model.settings._isModelRuleExists = false;
   }
+  
   next();
 }
 

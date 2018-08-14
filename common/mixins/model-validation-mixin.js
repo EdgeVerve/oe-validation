@@ -72,7 +72,7 @@ module.exports = function ModelValidations(Model) {
      * @name modelValidationsIsValidFn
      */
 
-  Model.prototype.isValid = function modelValidationsIsValidFn(done, context, data, path, inst, callback) {
+  Model.prototype.isValid = function modelValidationsIsValidFn(done, data, context, path, inst, callback) {
     var options;
     if (!context) {
       context = { options: {} };
@@ -98,7 +98,6 @@ module.exports = function ModelValidations(Model) {
     log.debug(options, 'modelData validation : ', modelData);
 
     data = inst.toObject(true);
-
     // path will give the exact level and property for which validation is being executed
     if (!path) {
       path = inst.constructor.modelName;
@@ -475,7 +474,7 @@ module.exports = function ModelValidations(Model) {
           instance = modelinstance.__data[property][i];
           if (validateEmbeddedModel && instance && data && model.settings.mixins && model.settings.mixins.ModelValidationMixin) {
             log.debug(options, 'recursive validation rules added for : ', model.modelName);
-            modelfns.push(async.apply(model.prototype.isValid, null, context, data, path, instance));
+            modelfns.push(async.apply(model.prototype.isValid, null, data, context, path, instance));
           }
         }
       } else if (properties[property].type instanceof Function &&
@@ -493,7 +492,7 @@ module.exports = function ModelValidations(Model) {
         });
         if (validateEmbeddedModel && instance && data && model.settings.mixins && model.settings.mixins.ModelValidations) {
           log.debug(options, 'recursive validation rules added for : ', model.modelName);
-          modelfns.push(async.apply(model.prototype.isValid, null, context, data, path, instance));
+          modelfns.push(async.apply(model.prototype.isValid, null, data, context, path, instance));
         }
       }
     });
