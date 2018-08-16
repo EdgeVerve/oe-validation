@@ -57,7 +57,9 @@ function modelRuleAfterSave(ctx, next) {
     model.settings._isModelRuleExists = true;
   } else {
     // validationRules is empty (updated or deleted)
-    model.settings._isModelRuleExists = false;
+    if (model && model.settings) {
+      model.settings._isModelRuleExists = false;
+    }
   }
   next();
 }

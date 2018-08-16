@@ -41,8 +41,8 @@ var testModelAsBasePM = 'ModelWithBasePM';
 var testModel;
 //var testModelWithBase;
 var testUsertoken;
-// Model id and _version required for doing upsert
-var modelRuleId, enrichmentRuleId;
+// ids  required for doing upsert
+var modelRuleId, enrichmentRuleId, modelId;
 chai.use(chaiThings);
 
 var defaultContext = {"ctx":{"tenantId":"default"}};
@@ -62,9 +62,6 @@ describe(chalk.blue('model-rule-test'), function () {
             base: 'BaseEntity',
             plural: testModelPlural,
             properties: {
-                id: {
-                    type: 'string'
-                },
                 status: {
                     type: 'string',
                     max: 8
@@ -278,11 +275,9 @@ describe(chalk.blue('model-rule-test'), function () {
             done();
         });
 
-        var modelId, modelVersion;
         it('create with valid data should be succesful.', function (done) {
             var url = baseUrl + '/' + testModelPlural+ '/?access_token=' + testUsertoken;
             var postData = {
-                id: "5a57260551b1d70c2c4f6666",
                 status: 'entered',
                 age: 50,
                 husband_name: 'Hopper'
@@ -307,16 +302,14 @@ describe(chalk.blue('model-rule-test'), function () {
                     expect(response.body.phone).to.be.equal(1234);
                     expect(response.body.email).to.be.equal('abc');
                     modelId = response.body.id;
-                    modelVersion = response.body._version;
                     done();
                 });
         });
 
-        it('PUT with valid data should be succesful.', function (done) {
+        xit('PUT with valid data should be succesful.', function (done) {
             var url = baseUrl + '/' + testModelPlural + '/?access_token=' + testUsertoken;
             var putData = {
                 id: modelId,
-                _version: modelVersion,
                 status: 'entered',
                 age: 50,
                 husband_name: 'Pradeep'
