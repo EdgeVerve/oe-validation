@@ -73,11 +73,7 @@ module.exports = function ModelValidations(Model) {
      */
 
   Model.prototype.isValid = function modelValidationsIsValidFn(done, data, context, path, inst, callback) {
-    var options;
-    if (!context) {
-      context = { options: {} };
-    }
-    options = context.options || {};
+    var options = context || {};
     // check if validations are to be executed, if not simply return the done callback.
     if (options && options.skipValidations) {
       return process.nextTick(function skipValidationCb() {
