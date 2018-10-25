@@ -11,8 +11,8 @@
   "db": {
     "host": "localhost",
     "port": 27017,
-    "url": "mongodb://localhost:27017/oe-business-rule",
-    "database": "oe-skeleton",
+    "url": "mongodb://localhost:27017/oe-validation-test",
+    "database": "oe-validation-test",
     "password": "admin",
     "name": "db",
     "connector": "mongodb",
