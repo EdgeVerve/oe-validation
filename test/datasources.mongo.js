@@ -5,7 +5,7 @@
  *
  */
 var mongoHost = process.env.MONGO_HOST || 'localhost';
-var dbName = process.env.DB_NAME || 'oe-skeleton-test';
+var dbName = process.env.DB_NAME || 'oe-validation-test';
 module.exports = 
 {
   "memdb": {

@@ -65,7 +65,6 @@ postgrestest:
     - export DB=postgres
     - export POSTGRES_HOST="10.73.53.144"
     - export DB_NAME=${CI_PIPELINE_ID}_pg
-    - time npm install git+http://evgit/atul/loopback-connector-postgresql.git --save
     - time npm install --no-optional
     - npm run grunt-cover
   tags:
