@@ -7,7 +7,6 @@ This project implements validation functionality on Models.
 * oe-cloud 
 * oe-logger
 * oe-expression
-* oe-personalization
 * oe-model-composite
 * oe-business-rule
 * oe-promise

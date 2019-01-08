@@ -43,8 +43,7 @@ describe(chalk.blue('Relation Validation test'), function () {
       'strict': false,
       'idInjection': true,
       'options': {
-        'validateUpsert': true,
-        "disableManualPersonalization":false
+        'validateUpsert': true
       },
       'properties': {
         'name': {
@@ -80,8 +79,7 @@ describe(chalk.blue('Relation Validation test'), function () {
           'strict': false,
           'idInjection': true,
           'options': {
-            'validateUpsert': true,
-            "disableManualPersonalization":false
+            'validateUpsert': true
           },
           'properties': {
             'category': {
@@ -114,8 +112,7 @@ describe(chalk.blue('Relation Validation test'), function () {
               'strict': false,
               'idInjection': true,
               'options': {
-                'validateUpsert': true,
-                "disableManualPersonalization":false
+                'validateUpsert': true
               },
               'properties': {
                 'name': {
@@ -147,8 +144,7 @@ describe(chalk.blue('Relation Validation test'), function () {
                   'strict': false,
                   'idInjection': true,
                   'options': {
-                    'validateUpsert': true,
-                    "disableManualPersonalization":false
+                    'validateUpsert': true
                   },
                   'mixins': {
                     "IdempotentMixin": false
