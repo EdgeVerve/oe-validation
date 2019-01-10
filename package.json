@@ -19,9 +19,7 @@
     "oe-logger": "^1.0.0",
     "oe-expression": "git+http://evgit/oec-next/oe-expression.git#master",
     "oe-business-rule": "git+http://evgit/oec-next/oe-business-rule.git#master",
-    "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
     "oe-promise": "git+http://evgit/oecloud.io/oe-promise.git#master",
-    "oe-personalization": "git+http://evgit/oec-next/oe-personalization.git#master",
     "oe-model-composite": "git+http://evgit/oec-next/oe-model-composite.git#master"
   },
   "devDependencies": {
@@ -44,8 +42,10 @@
     "mocha": "^3.4.2",
     "superagent-defaults": "^0.1.14",
     "supertest": "^1.1.0",
-     "loopback-connector-mongodb": "^3.4.2",
-    "oe-connector-postgresql": "git+http://evgit/oec-next/oe-connector-postgresql.git#master"
+    "loopback-connector-mongodb": "^3.4.2",
+    "oe-connector-postgresql": "git+http://evgit/oec-next/oe-connector-postgresql.git#master",
+    "oe-cloud": "git+http://evgit/oec-next/oe-cloud.git#master",
+    "oe-personalization": "git+http://evgit/oec-next/oe-personalization.git#master"
   },
   "repository": {
     "type": "git",
