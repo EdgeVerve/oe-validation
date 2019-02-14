@@ -52,7 +52,7 @@ module.exports = function GruntConfig(grunt) {
     },
 
     mocha_istanbul: {
-	  options: {
+      options: {
         mochaOptions: ['--exit']
       },
       coverage: {
