@@ -1,7 +1,6 @@
 stages:
   - pre-build
   - pre-build-test
-  - cleanup
 
 image: $REGISTRY/debian-node-oracle-docker
 variables:
@@ -105,11 +104,4 @@ oracletest:
     - npm run grunt-cover
   tags:
     - CEP_RUNNER_EE    
-
-lastcleanup:
-  stage: cleanup
-  script:
-    - echo "Finishing CI CD"
-  tags:
-    - CEP_RUNNER_EE
 
