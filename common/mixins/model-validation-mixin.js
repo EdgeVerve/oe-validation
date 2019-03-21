@@ -39,7 +39,7 @@ function generateSimpleValidation(expression) {
 
 // design-break this is experimental, may break functionality of expression validation
 function evalSimpleValidation(value, data) {
-  if (value.indexOf('Date') >= -1) {
+  if (value.indexOf('Date(') >= 0 || value.indexOf('Date (') >= 0) {
     var regex = /(Date([ ]+)?\([a-zA-Z0-9.]+\))(.[a-zA-Z]+)?/g;
     var regex2 = /\(([^)]+)\)/i;
     var dates = value.match(regex);
