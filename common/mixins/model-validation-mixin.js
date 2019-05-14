@@ -23,6 +23,7 @@ var exprLang = require('oe-expression/lib/expression-language.js');
 var getError = require('oe-cloud/lib/error-utils').attachValidationError;
 var loopback = require('loopback');
 var util = require('oe-cloud/lib/common/util.js');
+var enablePropertyValidate = process.env.RETURN_ON_PROP_VALIDATION || 0;
 
 
 // design-break this is experimental, may break functionality of expression validation
@@ -311,6 +312,10 @@ module.exports = function ModelValidations(Model) {
               // Add error to the response object
               getError(self, errArr);
               // done(valid);
+              if (enablePropertyValidate) {
+                log.info(options, 'Custom level validation will not be executed as property level validation is set as true');
+                return done(valid);
+              }
             }
             // running custom validations of model(written in model js file) if any
             if (Model.customValidations || inst.__data.customValidations) {
