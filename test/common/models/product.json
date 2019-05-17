@@ -1,0 +1,42 @@
+{
+    "name": "Product",
+    "plural": "Products",
+    "description": "Model to maintain Product details.",
+    "base": "BaseEntity",
+    "strict": true,
+    "options": {
+      "validateUpsert": true
+    },
+    "properties": {
+      "productId": {
+        "description": "The unique Id of product",
+        "type": "string",
+        "unique": true,
+        "index": {
+          "unique": true
+        }
+      },
+      "productName": {
+        "description": "The name of the product.",
+        "type": "string",
+        "required": true,
+        "min": 3,
+        "max": 100
+      },
+      "description": {
+        "description": "The detailed description of product.",
+        "type": "string",
+        "max": 4000
+      },
+      "manufacturingDate": {
+        "description": "The manufacturing date of the product.",
+        "type": "date",
+        "required": true
+      },
+      "expiryDate": {
+        "description": "The date when product will expire.",
+        "type": "date",
+        "required": true
+      }
+  }
+  }
