@@ -1,4 +1,4 @@
-# Validation Framework
+# Oe-Validation
 
 ## Declaring validation rules
 Validations are declared as part of a model definition along with rest of the model schema. Note that models can be created either by defining them in Model.json file or posting model schema on /modelDefinition API.
@@ -14,10 +14,13 @@ Validations can be attached to a model in following ways:
 ## Conditional Error Return Option
 Validation rules can be executed conditionally using this feature.
 Whenever a validation rule is attached to a model, it gets executed by default on any data post and it validates all types of validation checks.
+
 But if we want to return an error and if validation error is found at property level itself, then we can do this by setting an environment variable before starting the application i.e.
-SET RETURN_ON_PROP_VALIDATION=1.
-When RETURN_ON_PROP_VALIDATION is set as 1, the application will return error on property level validation itself. If the model does not have any error on the property level, then all levels of validations will be performed on the model data.
-By default, RETURN_ON_PROP_VALIDATION is set as 0 and all levels of validations will be performed before returning an error.
+***SET RETURN_ON_PROP_VALIDATION=1***.
+
+When ***RETURN_ON_PROP_VALIDATION*** is set as 1, the application will return error on property level validation itself. If the model does not have any error on the property level, then all levels of validations will be performed on the model data.
+
+By default, ***RETURN_ON_PROP_VALIDATION*** is set as 0 and all levels of validations will be performed before returning an error.
 
 ## Property Level Validations
 The property of a model alongside its metadata can have property level validations (i.e. Primitive validations) such as:
