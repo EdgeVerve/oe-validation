@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "async": "2.6.1",
-    "lodash": "4.17.11",
+    "lodash": "4.17.14",
     "oe-promise": "1.5.0",
     "oe-expression": "git+http://evgit/oecloud.io/oe-expression.git#2.1.0",
     "mustache": "2.3.2"
