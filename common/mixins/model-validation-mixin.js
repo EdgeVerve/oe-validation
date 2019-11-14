@@ -23,6 +23,7 @@ var exprLang = require('oe-expression/lib/expression-language.js');
 var getError = require('oe-cloud/lib/error-utils').attachValidationError;
 var loopback = require('loopback');
 var util = require('oe-cloud/lib/common/util.js');
+var enablePropertyValidate = process.env.RETURN_ON_PROP_VALIDATION || 0;
 
 
 // design-break this is experimental, may break functionality of expression validation
@@ -39,6 +40,65 @@ function generateSimpleValidation(expression) {
 
 // design-break this is experimental, may break functionality of expression validation
 function evalSimpleValidation(value, data) {
+  if (value.indexOf('Date(') >= 0 || value.indexOf('Date (') >= 0) {
+    var regex = /(Date([ ]+)?\([a-zA-Z0-9.]+\))(.[a-zA-Z]+)?/g;
+    var regex2 = /\(([^)]+)\)/i;
+    var dates = value.match(regex);
+    dates.forEach(function (v) {
+      var result = null;
+      var date = new Date(eval(v.match(regex2)[1]));
+      var dateOperator = v.substring(v.lastIndexOf('.') + 1);
+      switch (dateOperator) {
+        case 'daydate':
+          result = date.getDate();
+          break;
+        case 'dayname':
+          var dayNames = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
+          ];
+          var dayNo = date.getDate();
+          result = '"' + dayNames[dayNo] + '"';
+          break;
+        case 'day':
+          result = date.getDay();
+          break;
+        case 'month':
+          result = date.getMonth();
+          break;
+        case 'monthname':
+          var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+          var monthNo = date.getMonth();
+          result = '"' + monthNames[monthNo] + '"';
+          break;
+        case 'year':
+          result = date.getFullYear();
+          break;
+        case 'hours':
+          result = date.getHours();
+          break;
+        case 'minutes':
+          result = date.getMinutes();
+          break;
+        case 'seconds':
+          result = date.getSeconds();
+          break;
+        case 'ms':
+          result = date.getMilliseconds();
+          break;
+        default:
+          result = date.valueOf();
+      }
+      value = value.replace(v, result);
+    });
+  }
+
   return eval(value);
 }
 
@@ -252,6 +312,10 @@ module.exports = function ModelValidations(Model) {
               // Add error to the response object
               getError(self, errArr);
               // done(valid);
+              if (enablePropertyValidate) {
+                log.info(options, 'Custom level validation will not be executed as property level validation is set as true');
+                return done(valid);
+              }
             }
             // running custom validations of model(written in model js file) if any
             if (Model.customValidations || inst.__data.customValidations) {

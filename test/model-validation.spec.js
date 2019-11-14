@@ -136,6 +136,11 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
             'in': ['Male', 'Female'],
             'required': false
           },
+          'appearedIn' : {
+            'type': ['string'],
+            'in': [1,2,3,4,5,6],
+            'required': false
+          },
           'shipName': {
             'type': 'string',
             'pattern': '^[A-Za-z0-9-]+$'
@@ -202,7 +207,7 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
 
     var data = {
       'name': 'Vader',
-      'clan': 'Sith'
+      'clan': 'Sith',
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
@@ -319,6 +324,38 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'name': 'Doku',
       'numericField1': 10,
       'gender': 'Man',
+      'country': 'Tatooine',
+      'clan': 'Sith'
+    };
+    starWarsModel.create(data, defaultContext, function (err, results) {
+      expect(err).not.to.be.undefined;
+      done();
+    });
+  });
+
+  it('Validation Test - Should fail because appearedIn array values are out of list', function (done) {
+
+    var data = {
+      'name': 'Doku',
+      'numericField1': 10,
+      'gender': 'Male',
+      'appearedIn': [1,8],
+      'country': 'Tatooine',
+      'clan': 'Sith'
+    };
+    starWarsModel.create(data, defaultContext, function (err, results) {
+      expect(err).not.to.be.undefined;
+      done();
+    });
+  });
+
+  it('Validation Test - Should pass because appearedIn array values within allowed list', function (done) {
+
+    var data = {
+      'name': 'Doku',
+      'numericField1': 10,
+      'gender': 'Male',
+      'appearedIn': [2,4],
       'country': 'Tatooine',
       'clan': 'Sith'
     };

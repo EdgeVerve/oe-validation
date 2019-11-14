@@ -12,6 +12,8 @@ var expect = chai.expect;
 var loopback = require('loopback');
 var app = require('oe-cloud');
 var models = app.models;
+var productModel = loopback.findModel('Product');
+var enablePropertyValidate = process.env.RETURN_ON_PROP_VALIDATION || 0;
 
 chai.use(require('chai-things'));
 
@@ -275,6 +277,47 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
       }
     };
     childModel.create(data, defaultContext, function (err, results) {
+      expect(err).to.be.null;
+      done();
+    });
+  });
+
+  it('Validation Test when custom level validation is enabled/disabled.', function(done) {
+    var data = {
+      "productId": "prod1",
+      "productName": "ev",
+      "description": "Product 1 description",
+      "manufacturingDate": "2019-05-02T06:49:09.018Z",
+      "expiryDate": "2015-05-02T06:49:09.018Z",
+      "id": "1",
+      "scope": {}
+    };
+ 
+    productModel.create(data, defaultContext, function (err, results) {
+      if(!enablePropertyValidate){
+      expect(err.details.codes.manufacturingDate[0]).to.be.equal('custom-validation-err-001');
+      done();
+      }
+      else
+      {
+        expect(err.details.codes.productName[0]).to.be.equal('validation-err-001');
+      done();
+      }
+    });
+  });
+
+  it('Validation Test product Model - Should insert successfully', function(done) {
+    var data = {
+      "productId": "prod1",
+      "productName": "everyday",
+      "description": "Product 1 description",
+      "manufacturingDate": "2015-05-02T06:49:09.018Z",
+      "expiryDate": "2019-05-02T06:49:09.018Z",
+      "id": "1",
+      "scope": {}
+    };
+  
+    productModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
       done();
     });
