@@ -1,8 +1,8 @@
 /**
- * 
+ *
  * ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
  * Bangalore, India. All Rights Reserved.
- * 
+ *
  */
 var chalk = require('chalk');
 var bootstrap = require('./bootstrap');
@@ -17,16 +17,16 @@ var childModelName = 'Room';
 var restaurantModelName = 'Restaurant';
 var courseModelName = 'Course';
 var universityModelName = 'University';
-var defaultContext = {"ctx":{"tenantId":"default"}};
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 
 describe(chalk.blue('Relation Validation test'), function () {
   this.timeout(60000);
-  before('wait for boot', function(done){
-      bootstrap.then(() => {
+  before('wait for boot', function (done) {
+    bootstrap.then(() => {
       // debugger
       done();
-      })
-      .catch(done)
+    })
+      .catch(done);
   });
   var parentModel;
   var childModel;
@@ -35,7 +35,6 @@ describe(chalk.blue('Relation Validation test'), function () {
   var universityModel;
 
   before('setup test data', function (done) {
-
     models.ModelDefinition.create({
       'name': 'Hotel',
       'base': 'BaseEntity',
@@ -147,7 +146,7 @@ describe(chalk.blue('Relation Validation test'), function () {
                     'validateUpsert': true
                   },
                   'mixins': {
-                    "IdempotentMixin": false
+                    'IdempotentMixin': false
                   },
                   'properties': {
                     'name': {
@@ -349,7 +348,6 @@ describe(chalk.blue('Relation Validation test'), function () {
   });
 
   it('Validation Test - Should insert data successfully as target model is available', function (done) {
-
     models.ModelDefinition.create({
       'name': 'University',
       'base': 'BaseEntity',
@@ -402,5 +400,4 @@ describe(chalk.blue('Relation Validation test'), function () {
       }
     });
   });
-
 });

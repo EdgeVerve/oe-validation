@@ -16,20 +16,20 @@ var DecisionTable;
 var ModelRule;
 var bootstrapped = require('./bootstrap');
 var prefix = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,';
-var context= {"ctx":{"tenantId":"test-tenant"}};
-var adminContext = {"ctx":{"tenantId":"default"}};
+var context = {'ctx': {'tenantId': 'test-tenant'}};
+var adminContext = {'ctx': {'tenantId': 'default'}};
 
 class TestCaseError extends Error {
   constructor() {
     super();
-    this.message = "The test should not have hit this line. Check code.";
+    this.message = 'The test should not have hit this line. Check code.';
   }
 }
 
-describe('model rules with inherited models', function() {
+describe('model rules with inherited models', function () {
   this.timeout(20000);
   var baseModel;
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrapped.then(() => {
       // debugger
       // console.log('after boot');
@@ -42,10 +42,10 @@ describe('model rules with inherited models', function() {
 
       done();
     })
-    .catch(done)
+      .catch(done);
   });
 
-  before('creating the base model', function(done){
+  before('creating the base model', function (done) {
     var EmployeeBase = {
       name: 'XEmployee',
       base: 'BaseEntity',
@@ -68,35 +68,34 @@ describe('model rules with inherited models', function() {
     });
   });
 
-  
-  var insert = function(obj, ctx) {
+
+  var insert = function (obj, ctx) {
     return new Promise((resolve, reject) => {
       DecisionTable.create(obj, ctx, (err, record) => {
         if (err) {
-          reject(err)
-        }
-        else {
+          reject(err);
+        } else {
           resolve(resolve);
         }
       });
     });
   };
 
-  before('Creating decisions for the base model as default tenant', function(done){
+  before('Creating decisions for the base model as default tenant', function (done) {
     var decisions = [
       {
         name: 'd1',
         documentName: 'employee_validation.xlsx',
         documentData: prefix + fs.readFileSync(__dirname + '/test-data/employee_validation.xlsx').toString('base64')
-        
+
       }
     ];
 
     Promise.all(decisions.map(d => insert(d, adminContext)))
-    .then(results => {
-      done();
-    })
-    .catch(done);
+      .then(results => {
+        done();
+      })
+      .catch(done);
   });
 
   before('...wiring the model rule to run on base model insert (as default tenant)', (done) => {
@@ -106,10 +105,9 @@ describe('model rules with inherited models', function() {
     };
 
     ModelRule.create(obj, adminContext, (err, data) => {
-      if(err) {
-        done(err)
-      }
-      else {
+      if (err) {
+        done(err);
+      } else {
         done();
       }
     });
@@ -139,19 +137,17 @@ describe('model rules with inherited models', function() {
     baseModel.create(records, context, err => {
       expect(err).to.not.be.null;
       baseModel.find({}, context, (errFind, data) => {
-        if(errFind) {
-          done(errFind)
-        }
-        else {
+        if (errFind) {
+          done(errFind);
+        } else {
           expect(data.length).to.equal(1);
           done();
         }
       });
     });
-  }); //end ...before()
+  }); // end ...before()
 
   it('should assert the order in which the hooks execute are as expected', done => {
-
     // The purpose of this test is to convince yourself of the order in
     // which the hooks execute
     var task1 = cb => {
@@ -159,16 +155,15 @@ describe('model rules with inherited models', function() {
       var modelDef = {
         name: 'A',
         properties: {
-          a : 'string'
+          a: 'string'
         },
         base: 'BaseEntity'
       };
 
       ModelDefinition.create(modelDef, adminContext, (err, record) => {
-        if(err) {
-          cb(err)
-        }
-        else {
+        if (err) {
+          cb(err);
+        } else {
           // expect(record.name).to.equal(modelDef.name);
           cb();
         }
@@ -187,10 +182,9 @@ describe('model rules with inherited models', function() {
       };
 
       ModelDefinition.create(modelDef, adminContext, (err, record) => {
-        if(err) {
-          cb(err)
-        }
-        else {
+        if (err) {
+          cb(err);
+        } else {
           // expect(record.name).to.equal(modelDef.name);
           cb();
         }
@@ -209,10 +203,9 @@ describe('model rules with inherited models', function() {
       };
 
       ModelDefinition.create(modelDef, adminContext, (err, record) => {
-        if(err) {
-          cb(err)
-        }
-        else {
+        if (err) {
+          cb(err);
+        } else {
           // expect(record.name).to.equal(modelDef.name);
           cb();
         }
@@ -231,7 +224,7 @@ describe('model rules with inherited models', function() {
         next();
       });
 
-      B.observe('before save', function _bsB(ctx, next){
+      B.observe('before save', function _bsB(ctx, next) {
         cache.push('B');
         // console.log('B ctx:', ctx);
         next();
@@ -251,10 +244,9 @@ describe('model rules with inherited models', function() {
       };
 
       C.create(data, adminContext, err => {
-        if(err) {
+        if (err) {
           cb(err);
-        }
-        else {
+        } else {
           cb();
         }
       });
@@ -262,14 +254,13 @@ describe('model rules with inherited models', function() {
     };
     // debugger;
     async.seq(task1, task2, task3, task4, task5)(err => {
-      if(err) {
+      if (err) {
         done(err);
-      }
-      else {
+      } else {
         expect(cache).to.eql(['A', 'B']);
         done();
       }
-    })
+    });
   });
 
   it('should create a derived employee (as test-tenant)', done => {
@@ -283,13 +274,11 @@ describe('model rules with inherited models', function() {
 
     ModelDefinition.create(derivedEmployee, context, err => {
       if (err) {
-        done(err)
-      }
-      else {
+        done(err);
+      } else {
         done();
       }
     });
-
   });
 
   // this test should invoke the base model rule and deny
@@ -313,8 +302,7 @@ describe('model rules with inherited models', function() {
         // debugger;
         // console.log(err);
         done();
-      }
-      else {
+      } else {
         done(new TestCaseError());
       }
     });

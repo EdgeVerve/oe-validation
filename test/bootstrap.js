@@ -2,11 +2,11 @@ var oecloud = require('oe-cloud');
 var logger = require('oe-logger');
 var log = logger('test-bootstrapper');
 
-//var loopback = require('loopback');
+// var loopback = require('loopback');
 // oecloud.attachMixinsToBaseEntity("SkeletonMixin");
 
 oecloud.observe('loaded', function (ctx, next) {
-  console.log("oe-cloud modules loaded");
+  console.log('oe-cloud modules loaded');
   return next();
 });
 
@@ -26,9 +26,9 @@ oecloud.boot(__dirname, function (err) {
   oecloud.emit('test-start');
 });
 
-module.exports = new Promise(booted => 
-    oecloud.on('test-start', () => {
-      //debugger;
-      //console.log('booted');
-      booted();
-    } ) );
+module.exports = new Promise(booted =>
+  oecloud.on('test-start', () => {
+    // debugger;
+    // console.log('booted');
+    booted();
+  } ) );

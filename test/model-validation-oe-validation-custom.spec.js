@@ -1,8 +1,8 @@
 /**
- * 
+ *
  * ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
  * Bangalore, India. All Rights Reserved.
- * 
+ *
  */
 var chalk = require('chalk');
 
@@ -21,36 +21,35 @@ var parentModelName = 'Location';
 var orderModel = 'OrderModel';
 // Order Model with Static String for comparison in expression.
 var orderModel_SS = 'OrderModel_SS';
-var defaultContext = {"ctx":{"tenantId":"default"}};
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 describe(chalk.blue('oeCloud Validation Custom test'), function () {
-
   this.timeout(20000);
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrap.then(() => {
       // debugger
       done();
     })
-    .catch(done)
+      .catch(done);
   });
 
   before('setup test data', function (done) {
     models.ModelDefinition.create({
-      "name": "Location",
-      "base": "BaseEntity",
-      "idInjection": false,
-      "strict": "validate",
-      "options": {
-        "validateUpsert": true
+      'name': 'Location',
+      'base': 'BaseEntity',
+      'idInjection': false,
+      'strict': 'validate',
+      'options': {
+        'validateUpsert': true
       },
-      "properties": {
-        "companyCode": {
-          "type": "string",
-          "required": true
+      'properties': {
+        'companyCode': {
+          'type': 'string',
+          'required': true
         },
-        "locationCode": {
-          "type": "string",
-          "required": true,
-          "max": 200
+        'locationCode': {
+          'type': 'string',
+          'required': true,
+          'max': 200
         }
       }
     }, bootstrap.defaultContext, function (err, model) {
@@ -58,85 +57,85 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
         console.log('oeCloud Validation Custom test : Error in create model ', err);
       } else {
         models.ModelDefinition.create({
-          "name": orderModel,
-          "plural": orderModel + "s",
-          "base": "BaseEntity",
-          "strict": false,
-          "idInjection": false,
-          "options": {
-            "validateUpsert": true,
-            "oeValidations": {
-              "requestedBillingCompanyCheck": {
-                "validateWhen": {},
-                "type": "custom",
-                "expression": "(@mLocation.companyCode where locationCode = @i.requestedBillingLocation.locationCode and companyCode = @i.buyerCompanyCode) == @i.buyerCompanyCode"
+          'name': orderModel,
+          'plural': orderModel + 's',
+          'base': 'BaseEntity',
+          'strict': false,
+          'idInjection': false,
+          'options': {
+            'validateUpsert': true,
+            'oeValidations': {
+              'requestedBillingCompanyCheck': {
+                'validateWhen': {},
+                'type': 'custom',
+                'expression': '(@mLocation.companyCode where locationCode = @i.requestedBillingLocation.locationCode and companyCode = @i.buyerCompanyCode) == @i.buyerCompanyCode'
               }
             }
           },
-          "properties": {
-            "buyerCompanyCode": {
-              "type": "string",
-              "required": true
+          'properties': {
+            'buyerCompanyCode': {
+              'type': 'string',
+              'required': true
             },
-            "requestedBillingLocation": {
-              "type": "Location",
-              "required": true
+            'requestedBillingLocation': {
+              'type': 'Location',
+              'required': true
             }
           },
-          "validations": [],
-          "relations": {},
-          "acls": [],
-          "methods": {}
-          
+          'validations': [],
+          'relations': {},
+          'acls': [],
+          'methods': {}
+
         }, defaultContext, function (err, model) {
           if (err) {
             console.log('Error creating Order model definition', err);
           } else {
             models.ModelDefinition.create({
-              "name": orderModel_SS,
-              "plural": orderModel_SS + "s",
-              "base": "BaseEntity",
-              "strict": false,
-              "idInjection": false,
-              "options": {
-                "validateUpsert": true,
-                "oeValidations": {
-                  "requestedBillingCompanyCheck": {
-                    "validateWhen": {},
-                    "type": "custom",
-                    "expression": "(@mLocation.companyCode where locationCode = @i.requestedBillingLocation.locationCode and companyCode = \"SellerCompany\") == @i.buyerCompanyCode"
+              'name': orderModel_SS,
+              'plural': orderModel_SS + 's',
+              'base': 'BaseEntity',
+              'strict': false,
+              'idInjection': false,
+              'options': {
+                'validateUpsert': true,
+                'oeValidations': {
+                  'requestedBillingCompanyCheck': {
+                    'validateWhen': {},
+                    'type': 'custom',
+                    'expression': '(@mLocation.companyCode where locationCode = @i.requestedBillingLocation.locationCode and companyCode = "SellerCompany") == @i.buyerCompanyCode'
                   }
                 }
               },
-              "properties": {
-                "buyerCompanyCode": {
-                  "type": "string",
-                  "required": true
+              'properties': {
+                'buyerCompanyCode': {
+                  'type': 'string',
+                  'required': true
                 },
-                "requestedBillingLocation": {
-                  "type": "Location",
-                  "required": true
+                'requestedBillingLocation': {
+                  'type': 'Location',
+                  'required': true
                 }
               },
-              "validations": [],
-              "relations": {},
-              "acls": [],
-              "methods": {}
+              'validations': [],
+              'relations': {},
+              'acls': [],
+              'methods': {}
             }, defaultContext, function (err, model) {
               expect(err).to.be.not.ok;
               var parentModel = loopback.getModel(parentModelName, defaultContext);
               var data = [{
-                "companyCode": "Company1",
-                "locationCode": "Branch1"
+                'companyCode': 'Company1',
+                'locationCode': 'Branch1'
               }, {
-                "companyCode": "SellerCompany",
-                "locationCode": "BranchSeller1"
+                'companyCode': 'SellerCompany',
+                'locationCode': 'BranchSeller1'
               }, {
-                "companyCode": "SellerCompany",
-                "locationCode": "BranchSeller2"
+                'companyCode': 'SellerCompany',
+                'locationCode': 'BranchSeller2'
               }, {
-                "companyCode": "Company1",
-                "locationCode": "Branch2"
+                'companyCode': 'Company1',
+                'locationCode': 'Branch2'
               }];
 
               parentModel.create(data, defaultContext, function (err, results) {
@@ -191,20 +190,19 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
 
 
   it('Validation Test orderModel - Should insert data successfully', function (done) {
-
     var childModel = loopback.getModel(orderModel, defaultContext);
 
     var data = [{
-      "buyerCompanyCode": "SellerCompany",
-      "requestedBillingLocation": {
-        "companyCode": "SellerCompany",
-        "locationCode": "BranchSeller1"
+      'buyerCompanyCode': 'SellerCompany',
+      'requestedBillingLocation': {
+        'companyCode': 'SellerCompany',
+        'locationCode': 'BranchSeller1'
       }
     }, {
-      "buyerCompanyCode": "Company1",
-      "requestedBillingLocation": {
-        "companyCode": "Company1",
-        "locationCode": "Branch2"
+      'buyerCompanyCode': 'Company1',
+      'requestedBillingLocation': {
+        'companyCode': 'Company1',
+        'locationCode': 'Branch2'
       }
     }];
     childModel.create(data, defaultContext, function (err, results) {
@@ -214,14 +212,13 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
   });
 
   it('Validation Test orderModel - Should fail to insert data', function (done) {
-
     var childModel = loopback.getModel(orderModel, defaultContext);
 
     var data = {
-      "buyerCompanyCode": "Company1",
-      "requestedBillingLocation": {
-        "companyCode": "Company1",
-        "locationCode": "BranchSeller2"
+      'buyerCompanyCode': 'Company1',
+      'requestedBillingLocation': {
+        'companyCode': 'Company1',
+        'locationCode': 'BranchSeller2'
       }
     };
     childModel.create(data, defaultContext, function (err, results) {
@@ -232,14 +229,13 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
 
   // Test cases for allowing Static String comparison.
   it('Validation Test Static String - Should fail to insert data when string equality returns false', function (done) {
-    
     var childModel = loopback.getModel(orderModel_SS, defaultContext);
 
     var data = {
-      "buyerCompanyCode": "Company1",
-      "requestedBillingLocation": {
-        "companyCode": "Company1",
-        "locationCode": "Branch1"
+      'buyerCompanyCode': 'Company1',
+      'requestedBillingLocation': {
+        'companyCode': 'Company1',
+        'locationCode': 'Branch1'
       }
     };
     childModel.create(data, defaultContext, function (err, results) {
@@ -249,14 +245,13 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
   });
 
   it('Validation Test Static String - Should fail to insert data when string equality returns true, then fails at main expression.', function (done) {
-    
     var childModel = loopback.getModel(orderModel_SS, defaultContext);
 
     var data = {
-      "buyerCompanyCode": "Company1",
-      "requestedBillingLocation": {
-        "companyCode": "SellerCompany",
-        "locationCode": "BranchSeller1"
+      'buyerCompanyCode': 'Company1',
+      'requestedBillingLocation': {
+        'companyCode': 'SellerCompany',
+        'locationCode': 'BranchSeller1'
       }
     };
     childModel.create(data, defaultContext, function (err, results) {
@@ -266,14 +261,13 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
   });
 
   it('Validation Test Static String - Should insert successfully.', function (done) {
-    
     var childModel = loopback.getModel(orderModel_SS, defaultContext);
 
     var data = {
-      "buyerCompanyCode": "SellerCompany",
-      "requestedBillingLocation": {
-        "companyCode": "SellerCompany",
-        "locationCode": "BranchSeller2"
+      'buyerCompanyCode': 'SellerCompany',
+      'requestedBillingLocation': {
+        'companyCode': 'SellerCompany',
+        'locationCode': 'BranchSeller2'
       }
     };
     childModel.create(data, defaultContext, function (err, results) {
@@ -282,45 +276,42 @@ describe(chalk.blue('oeCloud Validation Custom test'), function () {
     });
   });
 
-  it('Validation Test when custom level validation is enabled/disabled.', function(done) {
+  it('Validation Test when custom level validation is enabled/disabled.', function (done) {
     var data = {
-      "productId": "prod1",
-      "productName": "ev",
-      "description": "Product 1 description",
-      "manufacturingDate": "2019-05-02T06:49:09.018Z",
-      "expiryDate": "2015-05-02T06:49:09.018Z",
-      "id": "1",
-      "scope": {}
+      'productId': 'prod1',
+      'productName': 'ev',
+      'description': 'Product 1 description',
+      'manufacturingDate': '2019-05-02T06:49:09.018Z',
+      'expiryDate': '2015-05-02T06:49:09.018Z',
+      'id': '1',
+      'scope': {}
     };
- 
+
     productModel.create(data, defaultContext, function (err, results) {
-      if(!enablePropertyValidate){
-      expect(err.details.codes.manufacturingDate[0]).to.be.equal('custom-validation-err-001');
-      done();
-      }
-      else
-      {
+      if (!enablePropertyValidate) {
+        expect(err.details.codes.manufacturingDate[0]).to.be.equal('custom-validation-err-001');
+        done();
+      } else {
         expect(err.details.codes.productName[0]).to.be.equal('validation-err-001');
-      done();
+        done();
       }
     });
   });
 
-  it('Validation Test product Model - Should insert successfully', function(done) {
+  it('Validation Test product Model - Should insert successfully', function (done) {
     var data = {
-      "productId": "prod1",
-      "productName": "everyday",
-      "description": "Product 1 description",
-      "manufacturingDate": "2015-05-02T06:49:09.018Z",
-      "expiryDate": "2019-05-02T06:49:09.018Z",
-      "id": "1",
-      "scope": {}
+      'productId': 'prod1',
+      'productName': 'everyday',
+      'description': 'Product 1 description',
+      'manufacturingDate': '2015-05-02T06:49:09.018Z',
+      'expiryDate': '2019-05-02T06:49:09.018Z',
+      'id': '1',
+      'scope': {}
     };
-  
+
     productModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
       done();
     });
   });
-
 });

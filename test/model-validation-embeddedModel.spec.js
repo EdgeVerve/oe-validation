@@ -1,8 +1,8 @@
 /**
- * 
+ *
  * ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
  * Bangalore, India. All Rights Reserved.
- * 
+ *
  */
 var chalk = require('chalk');
 var chai = require('chai');
@@ -16,22 +16,22 @@ var models = app.models;
 
 chai.use(require('chai-things'));
 
-//var supertest = require('supertest');
-//var api = supertest(app);
+// var supertest = require('supertest');
+// var api = supertest(app);
 var parentModelName = 'HotelModel';
 var childModelName = 'RoomModel';
-//var modelNameUrl = bootstrap.basePath + '/' + parentModelName;
-//var records = [];
-var defaultContext = {"ctx":{"tenantId":"default"}};
+// var modelNameUrl = bootstrap.basePath + '/' + parentModelName;
+// var records = [];
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 describe(chalk.blue('Embedded Model Validation test'), function () {
-  //var loopbackContext;
+  // var loopbackContext;
   this.timeout(20000);
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrap.then(() => {
       // debugger
       done();
     })
-    .catch(done)
+      .catch(done);
   });
 
   before('setup test data', function (done) {
@@ -155,7 +155,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
 
-
   after('destroy test models', function (done) {
     models.ModelDefinition.destroyAll({
       name: parentModelName
@@ -188,7 +187,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
   it('Validation Test - Should insert data successfully', function (done) {
-
     var parentModel = loopback.getModel(parentModelName, defaultContext);
 
     var data = {
@@ -212,7 +210,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
   it('Validation Test - Should fail to insert data successfully as price property is required for Room', function (done) {
-
     var parentModel = loopback.getModel(parentModelName, defaultContext);
 
     var data = {
@@ -243,7 +240,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
   it('Validation Test - Should fail to insert data successfully as category can only have alphabets', function (done) {
-
     var childModel = loopback.getModel(childModelName, defaultContext);
 
     var data = {
@@ -257,7 +253,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
   it('Validation Test - Should insert data successfully as validate options is false for _locations relation', function (done) {
-
     var parentModel = loopback.getModel(parentModelName, defaultContext);
 
     var data = {
@@ -273,10 +268,10 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
           'price': 7000
         }
       ],
-      "restaurants": [{
-        "cuisine": "thai"
+      'restaurants': [{
+        'cuisine': 'thai'
       }],
-      "locations": [{}]
+      'locations': [{}]
     };
     parentModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
@@ -285,7 +280,6 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
   });
 
   it('Validation Test - Should fail to insert data as validation for _restaurants relation is by default true', function (done) {
-
     var parentModel = loopback.getModel(parentModelName, defaultContext);
 
     var data = {
@@ -301,8 +295,8 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
           'price': 7000
         }
       ],
-      "restaurants": [{}],
-      "locations": [{}]
+      'restaurants': [{}],
+      'locations': [{}]
     };
     parentModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -310,5 +304,4 @@ describe(chalk.blue('Embedded Model Validation test'), function () {
       done();
     });
   });
-
 });
