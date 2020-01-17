@@ -5,18 +5,22 @@
   },
   {
    "path": "oe-business-rule",
+   "attachMixinsByDefault" : true,
    "enabled": true
   },
   {
     "path": "oe-personalization",
+    "attachMixinsByDefault" : true,
     "enabled": true
    },
    {
     "path": "oe-model-composite",
+    "attachMixinsByDefault" : true,
     "enabled": true
    },
    {
     "path": "oe-expression",
+    "attachMixinsByDefault" : true,
     "enabled": true
    },
   {
