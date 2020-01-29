@@ -550,7 +550,7 @@ module.exports = function ModelValidations(Model) {
             validateEmbeddedModel = rel.options.validate;
           }
         });
-        if (validateEmbeddedModel && instance && data && model.settings.mixins && model.settings.mixins.ModelValidations) {
+        if (validateEmbeddedModel && instance && data && model.settings.mixins && model.settings.mixins.ModelValidationMixin) {
           log.debug(options, 'recursive validation rules added for : ', model.modelName);
           modelfns.push(async.apply(model.prototype.isValid, null, data, context, path, instance));
         }
