@@ -11,7 +11,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
  * which will be parallely executed whenever any data is posted for the model.
  *
  * @mixin Model Validations
- * @author Sambit Kumar Patra
+ * @author Sambit Kumar Patra and Dipayan Aich
  */
 
 var logger = require('oe-logger');
@@ -225,7 +225,7 @@ module.exports = function ModelValidations(Model) {
       var modelRuleExistsFlag = false;
       if (!inst.constructor.settings._isModelRuleExists) {
         util.traverseInheritanceTree(inst.constructor, options, (base)=>{
-          if (base.settings._isModelRuleExists) {
+          if (base && base.settings && base.settings._isModelRuleExists) {
             modelRuleExistsFlag = true;
             return true;
           }
