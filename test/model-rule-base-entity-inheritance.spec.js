@@ -68,6 +68,32 @@ describe('model rules with inherited models', function () {
     });
   });
 
+  before('creating another base model', function (done) {
+    var StudentBase = {
+      name: 'XStudent',
+      base: 'Model',
+      mixins: {
+        ModelValidationMixin: true
+      },
+      properties: {
+        name: 'string',
+        age: 'number',
+        gender: 'string',
+        qualification: 'object',
+        section: 'string'
+      }
+    };
+    ModelDefinition.create(StudentBase, adminContext, (err, model) => {
+      if (err) {
+        done(err);
+      } else {
+        baseModel = model;
+        expect(baseModel.name).to.equal(StudentBase.name);
+        done();
+      }
+    });
+  });
+
 
   var insert = function (obj, ctx) {
     return new Promise((resolve, reject) => {
@@ -112,6 +138,22 @@ describe('model rules with inherited models', function () {
       }
     });
   });
+
+  before('...wiring the model rule to run on student base model insert (as default tenant)', (done) => {
+    var obj = {
+      modelName: 'XStudent',
+      validationRules: ['d1']
+    };
+
+    ModelRule.create(obj, adminContext, (err, data) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
+  });
+
 
   before('...asserting the base model rules get invoked on insert', done => {
     var records = [
@@ -261,6 +303,63 @@ describe('model rules with inherited models', function () {
         done();
       }
     });
+  });
+
+  it('should work if base is of PersistedModel or Model, but oe-validation is enabled', done => {
+    // The purpose of this test is to convince yourself of the order in
+    // which the hooks execute
+
+      // begin - creating a parent model from BaseEntity
+      var modelDef = {
+        name: 'X',
+        properties: {
+          "modelx": 'string'
+        },
+        base: 'XStudent'
+      };
+
+      ModelDefinition.create(modelDef, adminContext, (err, record) => {
+        if(err){
+          return done(err);
+        }
+        var records = [
+          {
+            name: 'student1',
+            modelx: 'a',
+            age: 23,
+            qualification: {
+              marks_10: 65,
+              marks_12: 65
+            }
+          },
+          {
+            name: 'student2',
+            age: 24,
+            modelx: 'b',
+            qualification: {
+              marks_10: 65,
+              marks_12: 59
+            }
+          }
+        ];
+        var x = loopback.findModel('X', adminContext);
+    
+        x.create(records, context, err => {
+          expect(err).to.not.be.null;
+          x.find({}, context, (errFind, data) => {
+            if (errFind) {
+              done(errFind);
+            } else {
+              expect(data.length).to.equal(1);
+              done();
+            }
+          });
+        });
+      });
+
+
+
+
   });
 
   it('should create a derived employee (as test-tenant)', done => {
