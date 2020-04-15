@@ -143,6 +143,10 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
           'shipName': {
             'type': 'string',
             'pattern': '^[A-Za-z0-9-]+$'
+          },
+          'movieReleaseDate': {
+            'type': 'date',
+            'required': true
           }
         },
         'validations': [],
@@ -192,7 +196,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'gender': 'Male',
       'country': 'Tatooine',
       'clan': 'Jedi',
-      'shipName': 'Delta-7B'
+      'shipName': 'Delta-7B',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
@@ -203,7 +208,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
   it('Validation Test - Should fail because name is not unique', function (done) {
     var data = {
       'name': 'Vader',
-      'clan': 'Sith'
+      'clan': 'Sith',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
@@ -218,6 +224,7 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
     var data1 = {
       'name': 'Snoke',
       'clan': 'Sith',
+      'movieReleaseDate': '04/05/1977',
       'scope': {
         'ship': 'Nebulon Ranger'
       }
@@ -225,6 +232,7 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
     var data2 = {
       'name': 'Snoke',
       'clan': 'Sith',
+      'movieReleaseDate': '04/05/1977',
       'scope': {
         'ship': 'Shieldship'
       }
@@ -245,7 +253,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'gender': 'Male',
       'country': 'Tatooine',
       'clan': 'Jedi',
-      'shipName': 'Delta-7B#'
+      'shipName': 'Delta-7B#',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -259,7 +268,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 12,
       'gender': 'Male',
       'country': 'Tatooine',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -273,7 +283,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 12,
       'gender': 'Male',
       'country': 'Tatooine',
-      'clan': 'Jedi'
+      'clan': 'Jedi',      
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.null;
@@ -286,6 +297,36 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'name': 'HanSolo',
       'numericField1': 12,
       'country': 'Tatooine',
+      'gender': 'Male',
+      'movieReleaseDate': '04-05-1977'
+    };
+    starWarsModel.create(data, defaultContext, function (err, results) {
+      expect(err).not.to.be.null;
+      done();
+    });
+  });
+
+  it('Validation Test - Should fail because date is not proper', function (done) {
+    var data = {
+      'name': 'HanSolo',
+      'numericField1': 12,
+      'country': 'Tatooine',
+      'clan': 'Jedi',
+      'gender': 'Male',
+      'movieReleaseDate': 'May4th'
+    };
+    starWarsModel.create(data, defaultContext, function (err, results) {
+      expect(err).not.to.be.null;
+      done();
+    });
+  });
+
+  it('Validation Test - Should fail because date is required', function (done) {
+    var data = {
+      'name': 'HanSolo',
+      'numericField1': 12,
+      'country': 'Tatooine',
+      'clan': 'Jedi',
       'gender': 'Male'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
@@ -300,7 +341,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 12,
       'country': 'Tatooine',
       'gender': 'Male',
-      'clan': 'Jedi1'
+      'clan': 'Jedi1',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.null;
@@ -314,7 +356,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 10,
       'gender': 'Man',
       'country': 'Tatooine',
-      'clan': 'Sith'
+      'clan': 'Sith',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -329,7 +372,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'gender': 'Male',
       'appearedIn': [1, 8],
       'country': 'Tatooine',
-      'clan': 'Sith'
+      'clan': 'Sith',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -344,7 +388,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'gender': 'Male',
       'appearedIn': [2, 4],
       'country': 'Tatooine',
-      'clan': 'Sith'
+      'clan': 'Sith',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -358,7 +403,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 10,
       'gender': 'Female',
       'country': 'England',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -372,7 +418,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 10,
       'gender': 'Male',
       'country': 'Australia',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -387,7 +434,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField2': 12,
       'gender': 'Female',
       'country': 'Tatooine',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -401,7 +449,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': 10.5,
       'gender': 'Male',
       'country': 'Tatooine',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.undefined;
@@ -415,7 +464,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
       'numericField1': '10a',
       'gender': 'Male',
       'country': 'Tatooine',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.null;
@@ -426,7 +476,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
   it('Validation Test - Should fail because numericField3 pattern rule is violated', function (done) {
     var data = {
       'numericField3': 12.345,
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.null;
@@ -437,7 +488,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
   it('Validation Test - Should fail because numericField3 should be number', function (done) {
     var data = {
       'numericField3': '12a',
-      'clan': 'Jedi'
+      'clan': 'Jedi',
+      'movieReleaseDate': '04-05-1977'
     };
     starWarsModel.create(data, defaultContext, function (err, results) {
       expect(err).not.to.be.null;
@@ -449,7 +501,8 @@ describe(chalk.blue('model-validation PropertyLevel Validation test'), function 
     var URL = url + '/StarWars' + '?access_token=' + testUsertoken;
 
     var postData = {
-      'clan': 'Jedi123'
+      'clan': 'Jedi123',
+      'movieReleaseDate': '04-05-1977'
     };
 
     api.post(URL)
