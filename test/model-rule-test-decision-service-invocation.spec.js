@@ -1,6 +1,6 @@
 /*
 ©2015-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
-The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries. 
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to remain with the applicable third party licensors or the open source community as the case may be and nothing here transfers the rights to the third party and open source components, except as expressly permitted.
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program, or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law.
 */
@@ -45,185 +45,178 @@ var testModelWithBase;
 // Model id and _version required for doing upsert
 var modelRuleId, modelRuleVersion;
 chai.use(chaiThings);
-var defaultContext = {"ctx":{"tenantId":"default"}};
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 
 describe(chalk.blue('model validations using decision service'), function () {
   this.timeout(20000);
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrapped.then(() => {
       // debugger
       done();
     })
-    .catch(done)
+      .catch(done);
   });
-  
-    before('create the temporary model.', function (done) {
-        // Forming model metadata
-        var data = [{
-            name: testModelName,
-            base: 'BaseEntity',
-            plural: testModelPlural,
-            properties: {
-                amount: 'number',
-                type:'string',
-                experience: 'number'
-            }
-        }];
-        // Creating Model in Loopback.
-        models.ModelDefinition.create(data, defaultContext, function (err, models) {
-            testModel = loopback.getModel(testModelName);
-            // testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
-            done(err);
-        });
+
+  before('create the temporary model.', function (done) {
+    // Forming model metadata
+    var data = [{
+      name: testModelName,
+      base: 'BaseEntity',
+      plural: testModelPlural,
+      properties: {
+        amount: 'number',
+        type: 'string',
+        experience: 'number'
+      }
+    }];
+    // Creating Model in Loopback.
+    models.ModelDefinition.create(data, defaultContext, function (err, models) {
+      testModel = loopback.getModel(testModelName);
+      // testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
+      done(err);
     });
+  });
 
-    before('creating the decision graph & service', function(done){
-        var graphData = JSON.parse(fs.readFileSync('test/test-data/approve-graph.json', { encoding: 'utf8' }));
-        var feelData = JSON.parse(fs.readFileSync('test/test-data/approve-feel.json', { encoding: 'utf8'}));
+  before('creating the decision graph & service', function (done) {
+    var graphData = JSON.parse(fs.readFileSync('test/test-data/approve-graph.json', { encoding: 'utf8' }));
+    var feelData = JSON.parse(fs.readFileSync('test/test-data/approve-feel.json', { encoding: 'utf8'}));
 
-        var decisionGraphData = {
-            name: 'ApproveDecision',
-            decisions: [],
-            data: feelData,
-            payload: null,
-            graph: graphData
+    var decisionGraphData = {
+      name: 'ApproveDecision',
+      decisions: [],
+      data: feelData,
+      payload: null,
+      graph: graphData
+    };
+
+    models.DecisionGraph.create(decisionGraphData, defaultContext, function (err, data) {
+      if (err) {
+        done(err);
+      } else {
+        expect(data.name).to.equal(decisionGraphData.name);
+        var decisionServiceData = {
+          name: 'ApproveValidation',
+          decisions: ['Approve'],
+          graphId: decisionGraphData.name
         };
 
-        models.DecisionGraph.create(decisionGraphData, defaultContext, function(err, data){
-            if (err) {
-                done(err)
-            }
-            else {
-                expect(data.name).to.equal(decisionGraphData.name);
-                var decisionServiceData = {
-                    name: 'ApproveValidation',
-                    decisions: ['Approve'],
-                    graphId: decisionGraphData.name
-                };
-
-                models.DecisionService.create(decisionServiceData, defaultContext, function(err, data) {
-                    expect(data.name).to.equal(decisionServiceData.name);
-                    done(err);
-                });
-            }
+        models.DecisionService.create(decisionServiceData, defaultContext, function (err, data) {
+          expect(data.name).to.equal(decisionServiceData.name);
+          done(err);
         });
-
+      }
     });
+  });
 
-    it('should insert into model into model rules table to register for validation without errors', function(done){
-        var modelRuleData = {
-            modelName: testModelName,
-            validationRules: ['ApproveValidation'], //this is a decision service
-            isService: true
-        };
+  it('should insert into model into model rules table to register for validation without errors', function (done) {
+    var modelRuleData = {
+      modelName: testModelName,
+      validationRules: ['ApproveValidation'], // this is a decision service
+      isService: true
+    };
 
-        models.ModelValidationRule.create(modelRuleData, defaultContext, done);
+    models.ModelValidationRule.create(modelRuleData, defaultContext, done);
+  });
 
-    });
-
-    it('should deny insertion of record to target model if record  data is incorrect', function(done){
-        this.timeout(120000);
-        var incorrectRecordData = {
-            amount: 1000,
-            type: 'PERSONAL_LOAN',
-            experience: 5
-        };
-        // debugger;
-        testModel.create(incorrectRecordData, defaultContext, function(err) {
-            if (err !== null) {
-                done();
-            }
-            else {
-                done(new Error('test model should not have inserted the record'));
-            }
-        });
-    });
-
-    it('should allow insertion of record to target model if record  data is valid', function(done){
-        this.timeout(120000);
-        var data = {
-            amount: 500,
-            type: 'PERSONAL_LOAN',
-            experience: 7
-        };
-        // debugger;
-        testModel.create(data, defaultContext, function(err, result) {
-            if (err) {
-                done(err)
-            }
-            else {
-                expect(result).to.be.object;
-                expect(result.amount).to.equal(data.amount);
-                done();
-            }
-        });
-    });
-
-    after('resetting model', function(done) {
-        testModelName = 'ServiceModelPropertyPopulationTest';
-        testModelPlural = 'ServiceModelPropertyPopulationTests';
-        // console.log("After of first Describe block");
+  it('should deny insertion of record to target model if record  data is incorrect', function (done) {
+    this.timeout(120000);
+    var incorrectRecordData = {
+      amount: 1000,
+      type: 'PERSONAL_LOAN',
+      experience: 5
+    };
+    // debugger;
+    testModel.create(incorrectRecordData, defaultContext, function (err) {
+      if (err !== null) {
         done();
+      } else {
+        done(new Error('test model should not have inserted the record'));
+      }
     });
+  });
+
+  it('should allow insertion of record to target model if record  data is valid', function (done) {
+    this.timeout(120000);
+    var data = {
+      amount: 500,
+      type: 'PERSONAL_LOAN',
+      experience: 7
+    };
+    // debugger;
+    testModel.create(data, defaultContext, function (err, result) {
+      if (err) {
+        done(err);
+      } else {
+        expect(result).to.be.object;
+        expect(result.amount).to.equal(data.amount);
+        done();
+      }
+    });
+  });
+
+  after('resetting model', function (done) {
+    testModelName = 'ServiceModelPropertyPopulationTest';
+    testModelPlural = 'ServiceModelPropertyPopulationTests';
+    // console.log("After of first Describe block");
+    done();
+  });
 });
 
-describe(chalk.blue('model data populators with decision services'), function(){
-    before('create the temporary model.', function (done) {
-        // Forming model metadata
-        var data = [{
-            name: testModelName,
-            base: 'BaseEntity',
-            plural: testModelPlural,
-            properties: {
-                name: 'string',
-                age:'number',
-                gender: 'string',
-                category: 'string'
-            }
-        }];
-        // Creating Model in Loopback.
-        models.ModelDefinition.create(data, defaultContext, function (err, models) {
-            testModel = loopback.getModel(testModelName, defaultContext);
-            // testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
-            done(err);
-        });
+describe(chalk.blue('model data populators with decision services'), function () {
+  before('create the temporary model.', function (done) {
+    // Forming model metadata
+    var data = [{
+      name: testModelName,
+      base: 'BaseEntity',
+      plural: testModelPlural,
+      properties: {
+        name: 'string',
+        age: 'number',
+        gender: 'string',
+        category: 'string'
+      }
+    }];
+    // Creating Model in Loopback.
+    models.ModelDefinition.create(data, defaultContext, function (err, models) {
+      testModel = loopback.getModel(testModelName, defaultContext);
+      // testModelWithBase = loopback.getModel(testModelAsBasePM, defaultContext);
+      done(err);
     });
+  });
 
-    before('creating the decision graph & service', function(done){
-        var graphData = JSON.parse(fs.readFileSync('test/test-data/category-graph.json', { encoding: 'utf8' }));
-        var feelData = JSON.parse(fs.readFileSync('test/test-data/category-feel.json', { encoding: 'utf8'}));
+  before('creating the decision graph & service', function (done) {
+    var graphData = JSON.parse(fs.readFileSync('test/test-data/category-graph.json', { encoding: 'utf8' }));
+    var feelData = JSON.parse(fs.readFileSync('test/test-data/category-feel.json', { encoding: 'utf8'}));
 
-        var decisionGraphData = {
-            name: 'CategoryDecision',
-            decisions: [],
-            data: feelData,
-            payload: null,
-            graph: graphData
+    var decisionGraphData = {
+      name: 'CategoryDecision',
+      decisions: [],
+      data: feelData,
+      payload: null,
+      graph: graphData
+    };
+
+    models.DecisionGraph.create(decisionGraphData, defaultContext, function (err, data) {
+      if (err) {
+        done(err);
+      } else {
+        expect(data.name).to.equal(decisionGraphData.name);
+        var decisionServiceData = {
+          name: 'AssignCategory',
+          decisions: ['Category'],
+          graphId: decisionGraphData.name
         };
 
-        models.DecisionGraph.create(decisionGraphData, defaultContext, function(err, data){
-            if (err) {
-                done(err)
-            }
-            else {
-                expect(data.name).to.equal(decisionGraphData.name);
-                var decisionServiceData = {
-                    name: 'AssignCategory',
-                    decisions: ['Category'],
-                    graphId: decisionGraphData.name
-                };
-
-                models.DecisionService.create(decisionServiceData, defaultContext, function(err, data) {
-                    expect(data.name).to.equal(decisionServiceData.name);
-                    done(err);
-                });
-            }
+        models.DecisionService.create(decisionServiceData, defaultContext, function (err, data) {
+          expect(data.name).to.equal(decisionServiceData.name);
+          done(err);
         });
-
+      }
     });
+  });
 
-    after('second after block', function(done) {
-        // console.log("After of second Describe block");
-        done();
-    });
+  after('second after block', function (done) {
+    // console.log("After of second Describe block");
+    done();
+  });
 });

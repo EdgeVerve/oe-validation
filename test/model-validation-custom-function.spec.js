@@ -1,6 +1,6 @@
 /*
 ©2015-2016 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
-The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries. 
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to remain with the applicable third party licensors or the open source community as the case may be and nothing here transfers the rights to the third party and open source components, except as expressly permitted.
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program, or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law.
 */
@@ -11,24 +11,22 @@ var expect = chai.expect;
 var loopback = require('loopback');
 var app = require('oe-cloud');
 chai.use(require('chai-things'));
-var defaultContext = {"ctx":{"tenantId":"default"}};
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 var modelName = 'OrganisationModel';
 var models = app.models;
 
 
 describe(chalk.blue('Validation custom function test'), function () {
-
   this.timeout(60000);
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrap.then(() => {
       // debugger
       done();
     })
-    .catch(done)
+      .catch(done);
   });
 
   before('setup test data', function (done) {
-
     models.ModelDefinition.create({
       'name': modelName,
       'base': 'BaseEntity',
@@ -110,7 +108,7 @@ describe(chalk.blue('Validation custom function test'), function () {
   it('Validation Test - Should fail to insert data', function (done) {
     var model = loopback.getModel(modelName, defaultContext);
     var data = {
-      'location': "USA"
+      'location': 'USA'
     };
     model.create(data, defaultContext, function (err, results) {
       expect(err).to.be.not.null;
@@ -120,13 +118,12 @@ describe(chalk.blue('Validation custom function test'), function () {
   it('Validation Test - Should successfully insert data', function (done) {
     var model = loopback.getModel(modelName, defaultContext);
     var data = {
-      'name': "OrganisationOne",
-      'location': "INDIA"
+      'name': 'OrganisationOne',
+      'location': 'INDIA'
     };
     model.create(data, defaultContext, function (err, results) {
       expect(err).to.be.null;
       done();
     });
   });
-
 });

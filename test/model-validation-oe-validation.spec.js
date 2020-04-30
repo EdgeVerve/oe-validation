@@ -1,8 +1,8 @@
 /**
- * 
+ *
  * ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
  * Bangalore, India. All Rights Reserved.
- * 
+ *
  */
 var chalk = require('chalk');
 var bootstrap = require('./bootstrap');
@@ -10,28 +10,28 @@ var bootstrap = require('./bootstrap');
 var loopback = require('loopback');
 var app = require('oe-cloud');
 var models = app.models;
-//var app = bootstrap.app;
-var defaultContext = {"ctx":{"tenantId":"default"}};
+// var app = bootstrap.app;
+var defaultContext = {'ctx': {'tenantId': 'default'}};
 var chai = require('chai');
 chai.use(require('chai-things'));
 var expect = chai.expect;
-//var supertest = require('supertest');
-//var api = supertest(app);
+// var supertest = require('supertest');
+// var api = supertest(app);
 var parentModelName = 'VehicleModel';
 var childModelName = 'Car';
 var errorModelName = 'Error';
-//var modelNameUrl = bootstrap.basePath + '/' + parentModelName;
-//var records = [];
+// var modelNameUrl = bootstrap.basePath + '/' + parentModelName;
+// var records = [];
 
 describe(chalk.blue('EV Validation test'), function () {
-  //var loopbackContext;
+  // var loopbackContext;
   this.timeout(60000000);
-  before('wait for boot', function(done){
+  before('wait for boot', function (done) {
     bootstrap.then(() => {
       // debugger
       done();
     })
-    .catch(done)
+      .catch(done);
   });
   var errorModel;
   var childModel;
@@ -138,7 +138,6 @@ describe(chalk.blue('EV Validation test'), function () {
             expect(err).to.be.null;
             return done();
           });
-
         });
       }
       expect(err).to.be.not.ok;
@@ -170,7 +169,6 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Should insert data successfully as default scope has a record for fuel petrol', function (done) {
-
     var data = {
       'name': 'BMW',
       'fuelType': 'petrol'
@@ -182,7 +180,6 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Prevent string field to have a script tag', function (done) {
-
     var data = {
       'name': 'Tata',
       'fuelType': 'petrol',
@@ -195,7 +192,6 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Allow string field to have a script tag when allowScript is true', function (done) {
-
     var data = {
       'name': 'Tata',
       'fuelType': 'petrol',
@@ -208,7 +204,6 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Should fail to insert data as default scope do not have any record for fuel diesel', function (done) {
-
     var data = {
       'name': 'BMW',
       'fuelType': 'diesel'
@@ -220,7 +215,6 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Should insert data successfully as provided scope has a record for fuel diesel', function (done) {
-
     var data = {
       'name': 'BMW',
       'fuelType': 'diesel',
@@ -247,10 +241,9 @@ describe(chalk.blue('EV Validation test'), function () {
   });
 
   it('Validation Test - Should fail to insert data and error message should not be equal to error code', function (done) {
-
     var errorData = {
-      "errCode": "fuel-err-001",
-      "errMessage": "{{name}} in {{path}} is not valid"
+      'errCode': 'fuel-err-001',
+      'errMessage': '{{name}} in {{path}} is not valid'
     };
     var data = {
       'name': 'KIA',
@@ -266,5 +259,4 @@ describe(chalk.blue('EV Validation test'), function () {
       });
     });
   });
-
 });

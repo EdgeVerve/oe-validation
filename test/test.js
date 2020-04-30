@@ -8,10 +8,8 @@ var expect = chai.expect;
 
 var bootstrapped = require('./bootstrap');
 
-describe("basic tests", () => {
-  before('wait for boot', function(done){
+describe('basic tests', () => {
+  before('wait for boot', function (done) {
     bootstrapped.then(() => done());
   });
-
-  
 });
