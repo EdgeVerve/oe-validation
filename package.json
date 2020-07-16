@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "async": "2.6.1",
-    "lodash": "4.17.14",
+    "lodash": "4.17.19",
     "mustache": "2.3.2",
     "oe-expression": "^2.0.0",
     "oe-promise": "^1.5.0"
