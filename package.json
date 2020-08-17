@@ -38,7 +38,7 @@
     "oe-connector-oracle": "git+http://evgit/oecloud.io/oe-connector-oracle.git#2.3.0",
     "oe-connector-postgresql": "git+http://evgit/oecloud.io/oe-connector-postgresql.git#2.3.0",
     "oe-model-composite": "git+http://evgit/oecloud.io/oe-model-composite.git#2.3.0",
-    "oe-personalization": "git+http://evgit/oecloud.io/oe-personalization.git#2.2.0",
+    "oe-personalization": "git+http://evgit/oecloud.io/oe-personalization.git#2.3.0",
     "superagent-defaults": "0.1.14",
     "supertest": "3.4.2"
   },
