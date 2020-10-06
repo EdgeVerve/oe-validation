@@ -35,7 +35,7 @@ module.exports = function (app, cb) {
       cb(err);
     } else {
       models.forEach((item, i)=>{
-        var m = loopback.findModel(item);
+        var m = loopback.findModel(item.modelName);
         m.settings._isModelRuleExists = true;
       });
 
